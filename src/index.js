@@ -3,7 +3,7 @@ import isFunction from 'lodash.isfunction';
 import isObject from 'lodash.isobject';
 import { fromJS } from 'immutable';
 
-function immutableMerger(oldState, newState) {
+export default function immutableMerger(oldState, newState) {
     // Whole state is ImmutableJS? Easiest way to merge
     if (isFunction(oldState.mergeDeep)) {
         return oldState.mergeDeep(newState);
@@ -46,5 +46,3 @@ function immutableMerger(oldState, newState) {
 
     return result;
 }
-
-export default (oldState, newState) => immutableMerger(oldState, newState);
