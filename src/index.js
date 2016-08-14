@@ -1,10 +1,9 @@
 import isArray from 'lodash.isarray';
 import isFunction from 'lodash.isfunction';
 import isObject from 'lodash.isobject';
-import merge from 'lodash.merge';
 import { fromJS } from 'immutable';
 
-export default (oldState, newState) => {
+export default function immutableMerger(oldState, newState) {
     // Whole state is ImmutableJS? Easiest way to merge
     if (isFunction(oldState.mergeDeep)) {
         return oldState.mergeDeep(newState);
@@ -16,8 +15,7 @@ export default (oldState, newState) => {
     }
 
     // Otherwise we need to carefully merge to avoid deprecated warnings from
-    // ImmutableJS see #8. We inspect only the first object level, as this is
-    // a common pattern with redux!
+    // ImmutableJS see #8.
     const result = { ...oldState };
     for (const key in newState) {
         if (!newState.hasOwnProperty(key)) {
@@ -28,7 +26,7 @@ export default (oldState, newState) => {
         // Assign if we don't need to merge at all
         if (!result.hasOwnProperty(key)) {
             result[key] = isObject(value) && !isArray(value)
-                ? merge({}, value)
+                ? immutableMerger({}, value)
                 : value;
             continue;
         }
@@ -40,11 +38,11 @@ export default (oldState, newState) => {
         } else if (!!value && isFunction(value.mergeDeep)) {
             result[key] = fromJS(oldValue).mergeDeep(value);
         } else if (isObject(value) && !isArray(value)) {
-            result[key] = merge({}, oldValue, value);
+            result[key] = immutableMerger(oldValue, value);
         } else {
             result[key] = value;
         }
     }
 
     return result;
-};
+}

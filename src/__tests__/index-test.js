@@ -83,5 +83,21 @@ describe('merger', () => {
             merger(oldState, newState)
                 .should.deep.equal({ x: 1337, y: 1338 });
         });
+
+        it('should recursively merge deeply nested immutables', () => {
+            const oldState = { nested: { deep: map({ x: 42 }) } };
+            const newState = { nested: { deep: { x: 1337 } } };
+
+            merger(oldState, newState)
+                .should.deep.equal({ nested: { deep: map({ x: 1337 }) } });
+        });
+
+        it('should merge correctly new immutable key', () => {
+            const oldState = { };
+            const newState = { nested: { deep: map({ x: 1337 }) } };
+
+            merger(oldState, newState)
+                .should.deep.equal({ nested: { deep: map({ x: 1337 }) } });
+        });
     });
 });
