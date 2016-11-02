@@ -43,6 +43,15 @@ describe('merger', () => {
             .should.deep.equal(map({ x: 0, y: 42 }));
     });
 
+    it('should properly merge if old state is null or undefined at the root', () => {
+        const newState = { x: 1337, y: 1338 };
+
+        merger(null, newState)
+            .should.deep.equal({ x: 1337, y: 1338 });
+        merger(void(0), newState)
+            .should.deep.equal({ x: 1337, y: 1338 });
+    });
+
     describe('issue #8 - ImmutableJS deprecated warnings', () => {
         it('should properly merge nested immutables', () => {
             const oldState = { nested: map({ x: 42 }) };
@@ -78,10 +87,10 @@ describe('merger', () => {
 
         it('should properly merge if old state values with null or undefined', () => {
             const oldState = { x: null, y: void(0) };
-            const newState = { x: 1337, y: 1338 };
+            const newState = map({ x: 1337, y: 1338 });
 
             merger(oldState, newState)
-                .should.deep.equal({ x: 1337, y: 1338 });
+                .should.deep.equal(map({ x: 1337, y: 1338 }));
         });
     });
 });
